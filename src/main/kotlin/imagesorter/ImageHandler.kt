@@ -24,7 +24,7 @@ object ImageHandler {
 
     }
 
-    fun toImagePattern(imageFileName: String): FileDetails {
+    fun toFileDetails(imageFileName: String): FileDetails {
         val imagePattern =  try {
             val match = imageRegex.find(imageFileName)!!
             val (prefix, numbers) = match.destructured

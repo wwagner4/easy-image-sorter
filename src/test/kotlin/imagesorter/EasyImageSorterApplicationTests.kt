@@ -88,7 +88,7 @@ class EasyImageSorterApplicationTests {
         }
         val expected = ImageHandler.FileDetails(fileName, base, ext, expectedImagePattern)
 
-        val imagePattern = ImageHandler.toImagePattern(fileName)
+        val imagePattern = ImageHandler.toFileDetails(fileName)
 
         assertEquals(expected, imagePattern)
     }
