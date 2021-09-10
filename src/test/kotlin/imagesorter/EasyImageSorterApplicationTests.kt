@@ -60,34 +60,6 @@ class EasyImageSorterApplicationTests {
         }
     }
 
-    object ImageHandler {
-
-        private val imageRegex by lazy { Regex("(\\w.*?)([0-9].*)\\..*") }
-
-        sealed interface ImagePattern {
-
-            data class Full(
-                val prefix: String,
-                val numberLen: Int,
-                val startNumber: Int,
-            ) : ImagePattern
-
-            object Invalid : ImagePattern
-
-        }
-
-        fun toImagePattern(name: String): ImagePattern {
-            return try {
-                val match = imageRegex.find(name)!!
-                val (prefix, numbers) = match.destructured
-                ImagePattern.Full(prefix, numbers.length, numbers.toInt())
-            } catch (_: Exception) {
-                ImagePattern.Invalid
-            }
-        }
-    }
-
-
     @ParameterizedTest
     @ValueSource(
         strings = [
@@ -95,7 +67,7 @@ class EasyImageSorterApplicationTests {
             "dia00062.jpg  #full|dia|5|62",
             "dia00063.jpg  #full|dia|5|63",
             "dia00062.JPG  #full|dia|5|62",
-            "dia00062.PNG  #full|dia|5|62",
+            "dia0000062.PNG  #full|dia|7|62",
             "dia.JPEG      #invalid",
             "dia09809o.png #invalid",
         ]
@@ -104,7 +76,11 @@ class EasyImageSorterApplicationTests {
         val fileName = value.split("#")[0].trim()
         val expectedArray = value.split("#")[1].split("|")
         val expected = when (expectedArray[0]) {
-            "full" -> ImageHandler.ImagePattern.Full(expectedArray[1], expectedArray[2].toInt(), expectedArray[3].toInt())
+            "full" -> ImageHandler.ImagePattern.Full(
+                expectedArray[1],
+                expectedArray[2].toInt(),
+                expectedArray[3].toInt()
+            )
             "invalid" -> ImageHandler.ImagePattern.Invalid
             else -> throw IllegalStateException("Invalid qualifier ${expectedArray[0]}")
         }
@@ -112,6 +88,32 @@ class EasyImageSorterApplicationTests {
         val imagePattern = ImageHandler.toImagePattern(fileName)
 
         assertEquals(expected, imagePattern)
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "dia-00062.jpg  #t",
+            "dia00062.jpg   #t",
+            "dia00062.JPG   #t",
+            "dia00062.JPEG  #t",
+            "dia00062.jpeg  #t",
+            "dia00062.png   #t",
+            "dia00062.PNG   #t",
+            "dia00062.txt   #f",
+            "dia00062       #f",
+            "dia00062.      #f",
+        ]
+    )
+    fun testIsImage(value: String) {
+        val fileName = value.split("#")[0].trim()
+        val expected = when (val expectedString = value.split("#")[1]) {
+            "t" -> true
+            "f" -> false
+            else -> throw IllegalStateException("Invalid qualifier $expectedString")
+        }
+
+        assertEquals(expected, ImageHandler.isImageFile(fileName))
     }
 
 }
