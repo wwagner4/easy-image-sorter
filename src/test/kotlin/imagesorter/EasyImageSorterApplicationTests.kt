@@ -26,15 +26,15 @@ class EasyImageSorterApplicationTests {
         val base = expectedArray[0]
         val ext = expectedArray[1]
         val expectedImagePattern = when (expectedArray[2]) {
-            "full" -> ImageHandler.ImagePattern.Full(
+            "full" -> ImagePattern.Full(
                 expectedArray[3],
                 expectedArray[4].toInt(),
                 expectedArray[5].toInt()
             )
-            "invalid" -> ImageHandler.ImagePattern.Invalid
+            "invalid" -> ImagePattern.Invalid
             else -> throw IllegalStateException("Invalid qualifier ${expectedArray[2]}")
         }
-        val expected = ImageHandler.FileDetails(fileName, base, ext, expectedImagePattern)
+        val expected = FileDetails(fileName, base, ext, expectedImagePattern)
 
         val imagePattern = ImageHandler.toFileDetails(fileName)
 
