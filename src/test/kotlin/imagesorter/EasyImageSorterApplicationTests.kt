@@ -73,25 +73,38 @@ class EasyImageSorterApplicationTests {
 
     }
 
+    val imageRegex by lazy { Regex("(\\w.*?)([0-9].*)\\..*") }
 
     fun toImagePattern(name: String): ImagePattern {
-        val match = Regex("(\\w.*?)([0-9].*)\\..*").find(name)!!
-        val (prefix, numbers) = match.destructured
-        return ImagePattern.Full(prefix, numbers.length, 62)
+        return try {
+            val match = imageRegex.find(name)!!
+            val (prefix, numbers) = match.destructured
+            ImagePattern.Full(prefix, numbers.length, numbers.toInt())
+        } catch (_: Exception) {
+            ImagePattern.Invalid
+        }
     }
 
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "dia-00062.jpg#dia-|5|62",
-            "dia00062.jpg#dia|5|62",
+            "dia-00062.jpg#full|dia-|5|62",
+            "dia00062.jpg#full|dia|5|62",
+            "dia00063.jpg#full|dia|5|63",
+            "dia00062.JPG#full|dia|5|62",
+            "dia00062.PNG#full|dia|5|62",
+            "dia.JPEG#invalid",
+            "dia09809o.png#invalid",
         ]
     )
     fun testImagePattern(value: String) {
         val nam = value.split("#")[0]
         val expectedArray = value.split("#")[1].split("|")
-        val expected =
-            ImagePattern.Full(expectedArray[0], expectedArray[1].toInt(), expectedArray[2].toInt())
+        val expected = when (expectedArray[0]) {
+            "full" -> ImagePattern.Full(expectedArray[1], expectedArray[2].toInt(), expectedArray[3].toInt())
+            "invalid" -> ImagePattern.Invalid
+            else -> throw IllegalStateException("Invalid qualifier ${expectedArray[0]}")
+        }
         val imagePattern = toImagePattern(nam)
         assertEquals(expected, imagePattern)
     }
