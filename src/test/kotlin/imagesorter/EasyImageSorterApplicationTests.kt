@@ -1,7 +1,6 @@
 package imagesorter
 
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.boot.test.context.SpringBootTest
@@ -61,51 +60,57 @@ class EasyImageSorterApplicationTests {
         }
     }
 
-    sealed interface ImagePattern {
+    object ImageHandler {
 
-        data class Full(
-            val prefix: String,
-            val numberLen: Int,
-            val startNumber: Int,
-        ) : ImagePattern
+        private val imageRegex by lazy { Regex("(\\w.*?)([0-9].*)\\..*") }
 
-        object Invalid : ImagePattern
+        sealed interface ImagePattern {
 
-    }
+            data class Full(
+                val prefix: String,
+                val numberLen: Int,
+                val startNumber: Int,
+            ) : ImagePattern
 
-    val imageRegex by lazy { Regex("(\\w.*?)([0-9].*)\\..*") }
+            object Invalid : ImagePattern
 
-    fun toImagePattern(name: String): ImagePattern {
-        return try {
-            val match = imageRegex.find(name)!!
-            val (prefix, numbers) = match.destructured
-            ImagePattern.Full(prefix, numbers.length, numbers.toInt())
-        } catch (_: Exception) {
-            ImagePattern.Invalid
+        }
+
+        fun toImagePattern(name: String): ImagePattern {
+            return try {
+                val match = imageRegex.find(name)!!
+                val (prefix, numbers) = match.destructured
+                ImagePattern.Full(prefix, numbers.length, numbers.toInt())
+            } catch (_: Exception) {
+                ImagePattern.Invalid
+            }
         }
     }
+
 
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "dia-00062.jpg#full|dia-|5|62",
-            "dia00062.jpg#full|dia|5|62",
-            "dia00063.jpg#full|dia|5|63",
-            "dia00062.JPG#full|dia|5|62",
-            "dia00062.PNG#full|dia|5|62",
-            "dia.JPEG#invalid",
-            "dia09809o.png#invalid",
+            "dia-00062.jpg #full|dia-|5|62",
+            "dia00062.jpg  #full|dia|5|62",
+            "dia00063.jpg  #full|dia|5|63",
+            "dia00062.JPG  #full|dia|5|62",
+            "dia00062.PNG  #full|dia|5|62",
+            "dia.JPEG      #invalid",
+            "dia09809o.png #invalid",
         ]
     )
     fun testImagePattern(value: String) {
-        val nam = value.split("#")[0]
+        val fileName = value.split("#")[0].trim()
         val expectedArray = value.split("#")[1].split("|")
         val expected = when (expectedArray[0]) {
-            "full" -> ImagePattern.Full(expectedArray[1], expectedArray[2].toInt(), expectedArray[3].toInt())
-            "invalid" -> ImagePattern.Invalid
+            "full" -> ImageHandler.ImagePattern.Full(expectedArray[1], expectedArray[2].toInt(), expectedArray[3].toInt())
+            "invalid" -> ImageHandler.ImagePattern.Invalid
             else -> throw IllegalStateException("Invalid qualifier ${expectedArray[0]}")
         }
-        val imagePattern = toImagePattern(nam)
+
+        val imagePattern = ImageHandler.toImagePattern(fileName)
+
         assertEquals(expected, imagePattern)
     }
 
