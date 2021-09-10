@@ -63,27 +63,30 @@ class EasyImageSorterApplicationTests {
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "dia-00062.jpg #full|dia-|5|62",
-            "dia00062.jpg  #full|dia|5|62",
-            "dia00063.jpg  #full|dia|5|63",
-            "dia00062.JPG  #full|dia|5|62",
-            "dia0000062.PNG  #full|dia|7|62",
-            "dia.JPEG      #invalid",
-            "dia09809o.png #invalid",
+            "dia-00062.jpg   #dia-00062|jpg|full|dia-|5|62",
+            "dia00062.jpg    #dia00062|jpg|full|dia|5|62",
+            "dia00063.jpg    #dia00063|jpg|full|dia|5|63",
+            "dia00062.JPG    #dia00062|JPG|full|dia|5|62",
+            "dia0000062.PNG  #dia0000062|PNG|full|dia|7|62",
+            "dia.JPEG        #dia|JPEG|invalid",
+            "dia09809o.png   #dia09809o|png|invalid",
         ]
     )
     fun testImagePattern(value: String) {
         val fileName = value.split("#")[0].trim()
         val expectedArray = value.split("#")[1].split("|")
-        val expected = when (expectedArray[0]) {
+        val base = expectedArray[0]
+        val ext = expectedArray[1]
+        val expectedImagePattern = when (expectedArray[2]) {
             "full" -> ImageHandler.ImagePattern.Full(
-                expectedArray[1],
-                expectedArray[2].toInt(),
-                expectedArray[3].toInt()
+                expectedArray[3],
+                expectedArray[4].toInt(),
+                expectedArray[5].toInt()
             )
             "invalid" -> ImageHandler.ImagePattern.Invalid
-            else -> throw IllegalStateException("Invalid qualifier ${expectedArray[0]}")
+            else -> throw IllegalStateException("Invalid qualifier ${expectedArray[2]}")
         }
+        val expected = ImageHandler.FileDetails(fileName, base, ext, expectedImagePattern)
 
         val imagePattern = ImageHandler.toImagePattern(fileName)
 
