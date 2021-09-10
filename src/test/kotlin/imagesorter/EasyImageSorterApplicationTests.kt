@@ -103,6 +103,7 @@ class EasyImageSorterApplicationTests {
             "dia00062.txt   #f",
             "dia00062       #f",
             "dia00062.      #f",
+            ".png           #f",
         ]
     )
     fun testIsImage(value: String) {

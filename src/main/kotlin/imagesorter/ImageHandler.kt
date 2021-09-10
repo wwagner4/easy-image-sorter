@@ -28,7 +28,7 @@ object ImageHandler {
 
     fun isImageFile(imageFileName: String): Boolean {
         val index = imageFileName.lastIndexOf(".")
-        if (index < 0) return false
+        if (index < 1) return false
         return when (imageFileName.substring(index + 1).lowercase()) {
             "jpg" -> true
             "jpeg" -> true
