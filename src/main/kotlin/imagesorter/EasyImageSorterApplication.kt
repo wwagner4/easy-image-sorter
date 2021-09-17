@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
 }
 
 @RestController
-class MessageResource {
+class DirectoryEntriesResource {
 
     @GetMapping("/list")
     fun directoryEntries(): Iterable<DirectoryEntry> {
@@ -22,6 +22,16 @@ class MessageResource {
         val homeDir = Path.of(System.getProperty("user.home"))
         val baseDir = homeDir.resolve(Path.of("work", "easysort", testDir))
         return ImageHandler.imagDirectoryEntries(baseDir)
+    }
+
+}
+
+@RestController
+class GridResource {
+
+    @GetMapping("/grid")
+    fun directoryEntries(): Iterable<DirectoryEntry> {
+        throw NotImplementedError()
     }
 
 }
