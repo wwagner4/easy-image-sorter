@@ -29,7 +29,7 @@ class Tryout {
             val testDir = "t1/t11"
             val homeDir = Path.of(System.getProperty("user.home"))
             val tDir = homeDir.resolve(Path.of("work", "easysort", testDir))
-            val json = ImageHandler.imageEntries(tDir)
+            val json = ImageHandler.imageEntries(tDir,200)
                 .joinToString(",\n", "[", "]") { toJson(it) }
             println(json)
         }
@@ -48,7 +48,7 @@ class Tryout {
             val testDir = "t1"
             val homeDir = Path.of(System.getProperty("user.home"))
             val baseDir = homeDir.resolve(Path.of("work", "easysort", testDir))
-            val json = ImageHandler.imagDirectoryEntries(baseDir)
+            val json = ImageHandler.imagDirectoryEntries(baseDir, 200)
                 .joinToString(",\n", "[", "]") { toJson(it) }
             println(json)
         }
@@ -60,7 +60,7 @@ class Tryout {
             val baseDir = homeDir.resolve(Path.of("work", "easysort", testDir))
             Files.list(baseDir).forEach {
                 if (ImageHandler.isImageFile(it)) {
-                    val b64 = ImageHandler.base64Thumbnail(it, 100)
+                    val b64 = ImageHandler.base64Thumbnail(it, 200)
                     val html = """<img src="data:image/${b64.format};base64, ${b64.value}" alt="${b64.name}" />"""
                     println(html)
                 }

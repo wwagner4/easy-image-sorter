@@ -21,7 +21,7 @@ class DirectoryEntriesResource {
         val testDir = "t1"
         val homeDir = Path.of(System.getProperty("user.home"))
         val baseDir = homeDir.resolve(Path.of("work", "easysort", testDir))
-        return ImageHandler.imagDirectoryEntries(baseDir)
+        return ImageHandler.imagDirectoryEntries(baseDir, 200)
     }
 
 }
