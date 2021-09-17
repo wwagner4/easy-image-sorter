@@ -38,6 +38,8 @@ class GridResource {
 
 data class DirectoryEntry(val id: String, val image: String)
 
+data class ImageEntry(val id: String, val image: String)
+
 data class FileDetails(
     val originalName: String,
     val baseName: String,

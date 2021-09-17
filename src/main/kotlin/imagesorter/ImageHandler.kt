@@ -103,6 +103,18 @@ object ImageHandler {
             .mapNotNull { toImageDirectoryEntry(it) }
     }
 
+    fun imageEntries(tDir: Path): Iterable<ImageEntry> {
+
+        fun directoryEntry(file: Path): ImageEntry? {
+            val id = file.fileName.toString()
+            if (!isImageFile(file)) return null
+            val base64Data = base64Thumbnail(file, 100)
+            val base64HtmlString = "data:image/${base64Data.format};base64, ${base64Data.value}"
+            return ImageEntry(id, base64HtmlString)
+        }
+        return Files.list(tDir).toList().mapNotNull { directoryEntry(it) }
+    }
+
 
 }
 
