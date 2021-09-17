@@ -1,10 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>easy image sorter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: 'Special Elite', cursive;
+            font-size: larger;
+            padding: 0 10px 0 10px;
+            background-image: url("bg2.jpg");
+        }
+
+        .content {
+            max-width: 40em;
+            margin: 2em auto 0 auto;
+        }
+
+        .q-td {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<h1>easy image sorter</h1>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quasar@1.14.6/dist/quasar.umd.min.js"></script>
+
+<div class="content">
+    <h1>easy image sorter</h1>
+    <div id="q-app">
+        <div class="q-pa-md">
+            <q-table :data="rows"
+                     :columns="columns"
+                     hide-header
+                     hide-bottom
+                     row-key="id">
+                <template v-slot:body="props">
+                    <q-tr :id="props.row.id" :props="props" @click="onRowClick(props.row.id)">
+                        <q-td v-for="col in props.cols"
+                              :key="col.name"
+                              :props="props">
+                            <span v-if="col.name !='image'">{{ col.value }}</span>
+                            <q-avatar v-if="col.name =='image'">
+                                <img :src="props.row.image">
+                            </q-avatar>
+                        </q-td>
+                    </q-tr>
+                </template>
+            </q-table>
+        </div>
+    </div>
+</div>
+
 </body>
+<script>
+
+    new Vue({
+            el: '#q-app',
+            data() {
+                return {
+                    columns: [
+                        {
+                            name: 'image',
+                            field: 'image',
+                        },
+                        {
+                            name: 'id',
+                            field: 'id',
+                            required: true,
+                            style: 'padding-left: 20px; vertical-align: bottom;',
+                        },
+                    ],
+                    rows: []
+                }
+            },
+            methods: {
+                onRowClick(row) {
+                    console.log('clicked on', row)
+                }
+            },
+            mounted() {
+                console.log("--- mounted ---")
+                axios
+                    .get('/list')
+                    .then(response => this.rows = response.data)
+            },
+        }
+    )
+</script>
 </html>
