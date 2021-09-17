@@ -11,8 +11,7 @@ class Tryout {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            imageEntries()
-
+            directoryEntries()
         }
 
         private fun imageEntries() {
