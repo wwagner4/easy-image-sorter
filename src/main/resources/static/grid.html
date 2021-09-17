@@ -63,7 +63,7 @@
                     class="col"
             >
                 <div class="grid-square" v-for="element in list" :key="element.id">
-                    {{ element.name }}
+                    {{ element.id }}
                 </div>
             </draggable>
         </div>
@@ -77,14 +77,14 @@
             data() {
                 return {
                     list: [
-                        {name: "Item 0", id: 0},
-                        {name: "Item 1", id: 1},
-                        {name: "Item 2", id: 2},
-                        {name: "Item 3", id: 3},
-                        {name: "Item 4", id: 4},
-                        {name: "Item 5", id: 5},
-                        {name: "Item 6", id: 6},
-                        {name: "Item 7", id: 7}
+                        {id: "dia-001"},
+                        {id: "dia-002"},
+                        {id: "dia-003"},
+                        {id: "dia-004"},
+                        {id: "dia-005"},
+                        {id: "dia-006"},
+                        {id: "dia-007"},
+                        {id: "dia-008"},
                     ]
                 }
             },
