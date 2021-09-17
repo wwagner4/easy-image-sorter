@@ -56,6 +56,7 @@
     <div id="row">
         <div>
             <h3>{{ directory.id }}</h3>
+            <p><a href="#" v-on:click="save">save</a> | <a href="#" v-on:click="saveAndBack">save and back</a> | <a href="#" v-on:click="backNoSave">back without save</a> | <a href="#" v-on:click="reset">reset</a></p>
             <draggable
                     :list="directory.list"
                     ghost-class="ghost"
@@ -130,7 +131,20 @@
                     }
                 }
             },
-            methods: {},
+            methods: {
+                save : function() {
+                    console.log("-- save -- ")
+                },
+                saveAndBack : function() {
+                    console.log("-- save and back -- ")
+                },
+                backNoSave : function() {
+                    console.log("-- back no save -- ")
+                },
+                reset : function() {
+                    console.log("-- reset -- ")
+                }
+            },
             mounted() {
                 console.log("--- mounted ---")
             },
