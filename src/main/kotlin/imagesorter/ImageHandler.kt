@@ -115,6 +115,12 @@ object ImageHandler {
         return Files.list(tDir).toList().mapNotNull { directoryEntry(it) }
     }
 
+    fun grid(id: String, thumbnailSize: Int): Grid {
+        val tDir = Path.of(id)
+        val gridEntries: Iterable<GridEntry> = imageEntries(tDir, thumbnailSize)
+        return Grid(id = id, gridEntries)
+    }
+
 
 }
 

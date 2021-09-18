@@ -11,26 +11,17 @@ class Tryout {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            directoryEntries()
+            imageEntries()
         }
 
         private fun imageEntries() {
 
-            fun toJson(imageEntry: GridEntry): String {
-                return """
-                    {
-                        "id": "${imageEntry.id}",
-                        "image": "${imageEntry.image}"
-                    }
-                """.trimIndent()
-            }
+            val id = "/home/wwagner4/work/easysort/t1/t12"
+            // val id = "/home/wwagner4/work/easysort/t1/t11/t112"
+            // val id = "/home/wwagner4/work/easysort/t1/t11/t111"
 
-            val testDir = "t1/t11"
-            val homeDir = Path.of(System.getProperty("user.home"))
-            val tDir = homeDir.resolve(Path.of("work", "easysort", testDir))
-            val json = ImageHandler.imageEntries(tDir,200)
-                .joinToString(",\n", "[", "]") { toJson(it) }
-            println(json)
+            val grid = ImageHandler.grid(id, 100)
+            println(grid)
         }
 
         private fun directoryEntries() {

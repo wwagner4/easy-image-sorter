@@ -23,7 +23,7 @@ class DirectoryEntriesResource {
         val testDir = "t1"
         val homeDir = Path.of(System.getProperty("user.home"))
         val baseDir = homeDir.resolve(Path.of("work", "easysort", testDir))
-        return ImageHandler.imagDirectoryEntries(baseDir, 200)
+        return ImageHandler.imagDirectoryEntries(baseDir, 100)
     }
 
 }
@@ -35,7 +35,9 @@ class GridResource {
     fun raster(@PathVariable idBase64: String): Grid {
         val id = String(Base64.decodeBase64URLSafe(idBase64))
         println("-- grid $id --")
-        return Grid(id, emptyList())
+        val grid = ImageHandler.grid(id, 100)
+        println(grid)
+        return grid
     }
 
 }
@@ -46,7 +48,7 @@ data class GridEntry(val id: String, val image: String)
 
 data class Grid(
     val id: String,
-    val entries: List<GridEntry>
+    val entries: Iterable<GridEntry>
 )
 
 
