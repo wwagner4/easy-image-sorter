@@ -16,7 +16,7 @@ class Tryout {
 
         private fun imageEntries() {
 
-            fun toJson(imageEntry: ImageEntry): String {
+            fun toJson(imageEntry: GridEntry): String {
                 return """
                     {
                         "id": "${imageEntry.id}",

@@ -20,14 +20,17 @@
             padding: 0 10px 0 10px;
             background-image: url("bg2.jpg");
         }
+
         .content {
             max-width: 80em;
             margin: 2em auto 0 auto;
         }
+
         .col {
             padding-right: 0;
             margin-right: 15px;
         }
+
         .grid-square {
             width: 200px;
             height: 200px;
@@ -37,10 +40,12 @@
             padding: 0;
             margin: 4px;
         }
+
         .ghost {
             opacity: 0.5;
             background: white;
         }
+
         .q-td {
             cursor: pointer;
         }
@@ -73,7 +78,7 @@
             </q-table>
         </div>
     </div>
-    <div class="content"  v-if="this.page === 'r'">
+    <div class="content" v-if="this.page === 'r'">
         <div>
             <h3>{{ directory.id }}</h3>
             <p><a href="#" v-on:click="save">save</a> | <a href="#" v-on:click="saveAndBack">save and back</a> | <a
@@ -181,23 +186,31 @@
             },
             methods: {
                 switchPage() {
-                  console.log("--- switch page ---", this.page)
-                  if (this.page === 'i') this.page = 'r'
-                  else this.page = 'i'
+                    console.log("--- switch page ---", this.page)
+                    if (this.page === 'i') this.page = 'r'
+                    else this.page = 'i'
                 },
                 onRowClick(row) {
-                    console.log('clicked on', row)
+                    console.log('--- clicked on', row, "---")
+                    let rs = '/grid/' + btoa(row)
+                    console.log('--- rs=', rs, '---')
+                    axios
+                        .get(rs)
+                        .then(response => {
+                            console.log('-- a', response.data)
+                            this.directory = response.data
+                        })
                 },
-                save : function() {
+                save: function () {
                     console.log("-- save -- ")
                 },
-                saveAndBack : function() {
+                saveAndBack: function () {
                     console.log("-- save and back -- ")
                 },
-                backNoSave : function() {
+                backNoSave: function () {
                     console.log("-- back no save -- ")
                 },
-                reset : function() {
+                reset: function () {
                     console.log("-- reset -- ")
                 }
             },

@@ -1,8 +1,10 @@
 package imagesorter
 
+import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 import java.nio.file.Path
 
@@ -29,16 +31,24 @@ class DirectoryEntriesResource {
 @RestController
 class GridResource {
 
-    @GetMapping("/grid")
-    fun directoryEntries(): Iterable<DirectoryEntry> {
-        throw NotImplementedError()
+    @GetMapping("/grid/{idBase64}")
+    fun raster(@PathVariable idBase64: String): Grid {
+        val id = String(Base64.decodeBase64URLSafe(idBase64))
+        println("-- grid $id --")
+        return Grid(id, emptyList())
     }
 
 }
 
 data class DirectoryEntry(val id: String, val image: String)
 
-data class ImageEntry(val id: String, val image: String)
+data class GridEntry(val id: String, val image: String)
+
+data class Grid(
+    val id: String,
+    val entries: List<GridEntry>
+)
+
 
 data class FileDetails(
     val originalName: String,
