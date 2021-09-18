@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+<!--suppress ALL -->
+<html lang="en" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,21 +20,14 @@
             padding: 0 10px 0 10px;
             background-image: url("bg2.jpg");
         }
-
         .content {
             max-width: 80em;
             margin: 2em auto 0 auto;
         }
-
-        .q-td {
-            cursor: pointer;
-        }
-
         .col {
             padding-right: 0;
             margin-right: 15px;
         }
-
         .grid-square {
             width: 200px;
             height: 200px;
@@ -43,10 +37,12 @@
             padding: 0;
             margin: 4px;
         }
-
         .ghost {
             opacity: 0.5;
             background: white;
+        }
+        .q-td {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -54,7 +50,8 @@
 <script src="https://cdn.jsdelivr.net/npm/quasar@1.14.6/dist/quasar.umd.min.js"></script>
 <h1 style="text-align: center">easy image sorter</h1>
 <div id="q-app">
-    <div class="content">
+    <p><a href="#" v-on:click="switchPage">switch page</a></p>
+    <div class="content" v-if="this.page === 'i'">
         <div class="q-pa-md">
             <q-table :data="rows"
                      :columns="columns"
@@ -76,7 +73,7 @@
             </q-table>
         </div>
     </div>
-    <div class="content">
+    <div class="content"  v-if="this.page === 'r'">
         <div>
             <h3>{{ directory.id }}</h3>
             <p><a href="#" v-on:click="save">save</a> | <a href="#" v-on:click="saveAndBack">save and back</a> | <a
@@ -100,6 +97,7 @@
             el: '#q-app',
             data() {
                 return {
+                    page: 'i',
                     columns: [
                         {
                             name: 'image',
@@ -182,6 +180,11 @@
                 }
             },
             methods: {
+                switchPage() {
+                  console.log("--- switch page ---", this.page)
+                  if (this.page === 'i') this.page = 'r'
+                  else this.page = 'i'
+                },
                 onRowClick(row) {
                     console.log('clicked on', row)
                 },
