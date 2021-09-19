@@ -11,7 +11,32 @@ class Tryout {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            imageEntries()
+            renameFiles()
+        }
+
+        private fun renameFiles() {
+
+
+            println("rename file")
+            val dir = Path.of("/home/wwagner4/work/easysort/t1/t11")
+            println("directory ${dir.absolutePathString()} exists: ${Files.exists(dir)}")
+            if (Files.exists(dir)) {
+                println("File $dir exists")
+                Files.list(dir)
+                    .filter { ImageHandler.isImageFile(it) }
+                    .toList()
+                    .sortedBy { it.fileName.toString() }
+                    .forEach { println(it.fileName.toString()) }
+                ImageSorter.rename(
+                    dir, listOf(
+                        Rename("dia-00026.jpg", "dia-00002.jpg"),
+                        Rename("dia-00001.jpg", "dia-00027.jpg"),
+                        Rename("dia-00003.jpg", "dia-00003.jpg"),
+                        Rename("dia-00027.jpg", "dia-00001.jpg"),
+                        Rename("dia-00002.jpg", "dia-00026.jpg"),
+                    )
+                )
+            }
         }
 
         private fun imageEntries() {

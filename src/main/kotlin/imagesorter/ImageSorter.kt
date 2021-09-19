@@ -1,5 +1,8 @@
 package imagesorter
 
+import java.nio.file.Files
+import java.nio.file.Path
+
 data class Rename(
     val srcName: String,
     val destName: String
@@ -64,5 +67,36 @@ object ImageSorter {
             ImagePattern.Full(pg.prefix, numberLen = pg.maxNumberLen, pg.minNumber)
         }
     }
+
+    fun rename(dir: Path, renames: List<Rename>) {
+
+        fun tmpName(index: Int): String {
+            val indexStr = "%05d".format(index)
+            return "tmp-$indexStr"
+        }
+
+        fun move(rename: Rename) {
+            val srcPath = dir.resolve(rename.srcName)
+            val destPath = dir.resolve(rename.destName)
+            Files.move(srcPath, destPath)
+            println("moved $srcPath to $destPath")
+        }
+
+        fun isRenaming(rename: Rename): Boolean {
+            return rename.srcName != rename.destName
+        }
+
+        val renamingRenames = renames.filter { isRenaming(it) }
+        val tmpRenames = renamingRenames
+            .withIndex()
+            .map { Rename(it.value.srcName, tmpName(it.index)) }
+        tmpRenames.forEach { move(it) }
+
+        renamingRenames
+            .zip(tmpRenames)
+            .map { (original, tmp) -> Rename(tmp.destName, original.destName) }
+            .forEach { move(it) }
+    }
+
 
 }
