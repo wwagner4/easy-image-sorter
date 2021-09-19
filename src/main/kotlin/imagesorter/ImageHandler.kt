@@ -88,7 +88,7 @@ object ImageHandler {
             fun toDirectoryEntry(): DirectoryEntry? {
                 fun anyImageFile(files: List<Path>): DirectoryEntry? {
                     if (files.isEmpty()) return null
-                    val head = files[0]
+                    val head = files.sortedBy { it.fileName.toString() }[0]
                     if (isImageFile(head)) return directoryEntry(head)
                     return anyImageFile(files.drop(1))
                 }
@@ -103,7 +103,7 @@ object ImageHandler {
             .mapNotNull { toImageDirectoryEntry(it) }
     }
 
-    fun imageEntries(tDir: Path, thumbnailSize: Int): Iterable<GridEntry> {
+    private fun imageEntries(imagesDir: Path, thumbnailSize: Int): Iterable<GridEntry> {
 
         fun directoryEntry(file: Path): GridEntry? {
             val id = file.fileName.toString()
@@ -112,7 +112,8 @@ object ImageHandler {
             val base64HtmlString = "data:image/${base64Data.format};base64, ${base64Data.value}"
             return GridEntry(id, base64HtmlString)
         }
-        return Files.list(tDir).toList().mapNotNull { directoryEntry(it) }
+        val entries = Files.list(imagesDir).parallel().map { directoryEntry(it) }
+        return entries.toList().filterNotNull().sortedBy { it.id }
     }
 
     fun grid(id: String, thumbnailSize: Int): Grid {

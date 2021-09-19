@@ -36,7 +36,7 @@ class GridResource {
         val id = String(Base64.decodeBase64URLSafe(idBase64))
         println("-- grid $id --")
         val grid = ImageHandler.grid(id, 100)
-        println(grid)
+        // println(grid)
         return grid
     }
 
