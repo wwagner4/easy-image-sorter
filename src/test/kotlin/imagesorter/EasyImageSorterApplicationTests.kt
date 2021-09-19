@@ -1,6 +1,7 @@
 package imagesorter
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.boot.test.context.SpringBootTest
@@ -66,6 +67,18 @@ class EasyImageSorterApplicationTests {
         }
 
         assertEquals(expected, ImageHandler.isImageFile(fileName))
+    }
+
+    @Test
+    fun `file details jpeg`() {
+        val fd = ImageHandler.toFileDetails("a001.jpeg")
+        assertEquals("jpeg", fd.extension)
+    }
+
+    @Test
+    fun `file details PNG`() {
+        val fd = ImageHandler.toFileDetails("a001.PNG")
+        assertEquals("PNG", fd.extension)
     }
 
 }

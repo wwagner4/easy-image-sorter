@@ -8,15 +8,26 @@ data class Rename(
 object ImageSorter {
 
     fun renamings(originalOrder: List<String>, newOrder: List<String>): List<Rename> {
-        val cip = commonImagePattern(originalOrder)
+        val commonImagePattern = commonImagePattern(newOrder)
 
-        return originalOrder.zip(newOrder).map { (a, b) -> Rename(a, b) }
+        val extensions = originalOrder.map { ImageHandler.toFileDetails(it).extension }
+        val newFileNames: List<String> = newNames(commonImagePattern, extensions)
+        val originalNameMap: Map<String, String> = originalOrder.zip(newFileNames).toMap()
+
+        val newOrderRenamed = newOrder.map {
+            originalNameMap.getValue(it)
+        }
+        return originalOrder.zip(newOrderRenamed).map { (a, b) -> Rename(a, b) }
     }
 
-    fun newNames(imagePattern: ImagePattern.Full, size: Int): List<String> {
-        val numbers = generateSequence { imagePattern.number until imagePattern.number + size }.toList()
-        // TODO Continue here. Do not forget file extensions to be equal as before.
-        throw NotImplementedError()
+    fun newNames(imagePattern: ImagePattern.Full, prefixes: List<String>): List<String> {
+        val fmtStr = "%0${imagePattern.numberLen}d"
+        return prefixes.withIndex().map {
+            val index = it.index
+            val prefix = it.value
+            val indexStr = fmtStr.format(index + imagePattern.number)
+            "${imagePattern.prefix}$indexStr.$prefix"
+        }
     }
 
     fun commonImagePattern(fileNames: List<String>): ImagePattern.Full {
@@ -31,7 +42,7 @@ object ImageSorter {
             val count: Int,
         )
 
-        fun full(imagePattern: ImagePattern):ImagePattern.Full? {
+        fun full(imagePattern: ImagePattern): ImagePattern.Full? {
             return if (imagePattern is ImagePattern.Full) imagePattern else null
         }
 
@@ -42,14 +53,15 @@ object ImageSorter {
             return PrefixGroup(group.first, minNumber, maxNumberLen, patterns.size)
         }
 
-        val imagePatterns = fileNames.map { ImageHandler.toFileDetails(it).imagePattern }
+        val imagePatterns =
+            fileNames.filter { ImageHandler.isImageFile(it) }.map { ImageHandler.toFileDetails(it).imagePattern }
         val groups = imagePatterns.mapNotNull { full(it) }.groupBy { it.prefix }.toList()
-        val prefixGroups = groups.map { prefixGroup(it) }.sortedBy { it.prefix }.sortedBy { it.count }
+        val prefixGroups = groups.map { prefixGroup(it) }.sortedBy { it.prefix }.sortedBy { -it.count }
 
-        return if (prefixGroups.isEmpty()) ImagePattern.Full(defaultPrefix, numberLen = defaultNumberLen, 0 )
+        return if (prefixGroups.isEmpty()) ImagePattern.Full(defaultPrefix, numberLen = defaultNumberLen, 0)
         else {
             val pg = prefixGroups[0]
-            ImagePattern.Full(pg.prefix, numberLen = pg.maxNumberLen, pg.minNumber )
+            ImagePattern.Full(pg.prefix, numberLen = pg.maxNumberLen, pg.minNumber)
         }
     }
 
