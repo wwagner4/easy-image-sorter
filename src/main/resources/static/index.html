@@ -133,6 +133,8 @@
                 },
                 save: function () {
                     console.log("-- save -- ")
+                    let sorted = this.directoryList.flatMap(x => [{id: x.id}]);
+                    console.log(sorted);
                 },
                 saveAndBack: function () {
                     console.log("-- save and back -- ")
