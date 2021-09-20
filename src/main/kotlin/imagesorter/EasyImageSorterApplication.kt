@@ -32,16 +32,17 @@ class EasySorterResource {
     }
 
     @PostMapping("/sort")
-    fun sort(@RequestBody sorted: List<ImageEntryBasic>) {
+    fun sort(@RequestBody sorted: Sort) {
         println("-- sort --")
-        sorted.forEach { println(it) }
+        println(sorted)
+
     }
 
 }
 
 data class ImageEntry(val id: String, val image: String)
 
-data class ImageEntryBasic(val id: String)
+data class Sort(val id: String, val images: List<String>)
 
 data class Grid(
     val id: String,

@@ -133,10 +133,11 @@
                 },
                 save: function () {
                     console.log("-- save -- ")
-                    let sorted = this.directoryList.flatMap(x => [{id: x.id}]);
-                    console.log(sorted);
-                    let json = JSON.stringify(sorted);
-                    console.log(json);
+                    let sorted = this.directoryList.flatMap(x => [x.id]);
+                    let sort = {id: this.directoryId, images: sorted}
+                    //console.log(sorted);
+                    let json = JSON.stringify(sort);
+                    //console.log(json);
                     let params = {
                         headers: {
                             'Content-Type': 'application/json'
