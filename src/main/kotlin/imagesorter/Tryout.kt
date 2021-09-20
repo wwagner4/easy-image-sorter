@@ -51,7 +51,7 @@ class Tryout {
 
         private fun directoryEntries() {
 
-            fun toJson(directoryEntry: DirectoryEntry): String {
+            fun toJson(directoryEntry: ImageEntry): String {
                 return """
                     {
                         "id": "${directoryEntry.id}",

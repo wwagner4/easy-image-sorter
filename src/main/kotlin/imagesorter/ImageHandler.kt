@@ -74,19 +74,19 @@ object ImageHandler {
     }
 
 
-    fun imagDirectoryEntries(baseDir: Path, thumbnailSize: Int): Iterable<DirectoryEntry> {
+    fun imagDirectoryEntries(baseDir: Path, thumbnailSize: Int): Iterable<ImageEntry> {
 
-        fun toImageDirectoryEntry(path: Path): DirectoryEntry? {
+        fun toImageDirectoryEntry(path: Path): ImageEntry? {
 
-            fun directoryEntry(firstImage: Path): DirectoryEntry {
+            fun directoryEntry(firstImage: Path): ImageEntry {
                 val id = path.toAbsolutePath().toString()
                 val base64Data = base64Thumbnail(firstImage, thumbnailSize)
                 val base64HtmlString = "data:image/${base64Data.format};base64, ${base64Data.value}"
-                return DirectoryEntry(id, base64HtmlString)
+                return ImageEntry(id, base64HtmlString)
             }
 
-            fun toDirectoryEntry(): DirectoryEntry? {
-                fun anyImageFile(files: List<Path>): DirectoryEntry? {
+            fun toDirectoryEntry(): ImageEntry? {
+                fun anyImageFile(files: List<Path>): ImageEntry? {
                     if (files.isEmpty()) return null
                     val head = files.sortedBy { it.fileName.toString() }[0]
                     if (isImageFile(head)) return directoryEntry(head)
@@ -103,14 +103,14 @@ object ImageHandler {
             .mapNotNull { toImageDirectoryEntry(it) }
     }
 
-    private fun imageEntries(imagesDir: Path, thumbnailSize: Int): Iterable<GridEntry> {
+    private fun imageEntries(imagesDir: Path, thumbnailSize: Int): Iterable<ImageEntry> {
 
-        fun directoryEntry(file: Path): GridEntry? {
+        fun directoryEntry(file: Path): ImageEntry? {
             val id = file.fileName.toString()
             if (!isImageFile(file)) return null
             val base64Data = base64Thumbnail(file, thumbnailSize)
             val base64HtmlString = "data:image/${base64Data.format};base64, ${base64Data.value}"
-            return GridEntry(id, base64HtmlString)
+            return ImageEntry(id, base64HtmlString)
         }
         val entries = Files.list(imagesDir).parallel().map { directoryEntry(it) }
         return entries.toList().filterNotNull().sortedBy { it.id }
@@ -118,7 +118,7 @@ object ImageHandler {
 
     fun grid(id: String, thumbnailSize: Int): Grid {
         val tDir = Path.of(id)
-        val gridEntries: Iterable<GridEntry> = imageEntries(tDir, thumbnailSize)
+        val gridEntries: Iterable<ImageEntry> = imageEntries(tDir, thumbnailSize)
         return Grid(id = id, gridEntries)
     }
 

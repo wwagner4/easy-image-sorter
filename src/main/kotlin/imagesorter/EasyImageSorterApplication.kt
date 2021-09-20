@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
 class EasySorterResource {
 
     @GetMapping("/list")
-    fun directoryEntries(): Iterable<DirectoryEntry> {
+    fun directoryEntries(): Iterable<ImageEntry> {
         val testDir = "t1"
         val homeDir = Path.of(System.getProperty("user.home"))
         val baseDir = homeDir.resolve(Path.of("work", "easysort", testDir))
@@ -37,13 +37,11 @@ class EasySorterResource {
 
 }
 
-data class DirectoryEntry(val id: String, val image: String)
-
-data class GridEntry(val id: String, val image: String)
+data class ImageEntry(val id: String, val image: String)
 
 data class Grid(
     val id: String,
-    val entries: Iterable<GridEntry>
+    val entries: Iterable<ImageEntry>
 )
 
 
