@@ -3,9 +3,7 @@ package imagesorter
 import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.nio.file.Path
 
 @SpringBootApplication
@@ -30,14 +28,20 @@ class EasySorterResource {
     fun raster(@PathVariable idBase64: String): Grid {
         val id = String(Base64.decodeBase64URLSafe(idBase64))
         println("-- grid $id --")
-        val grid = ImageHandler.grid(id, 100)
-        // println(grid)
-        return grid
+        return ImageHandler.grid(id, 100)
+    }
+
+    @PostMapping("/sort")
+    fun sort(@RequestBody sorted: List<ImageEntryBasic>) {
+        println("-- sort --")
+        sorted.forEach { println(it) }
     }
 
 }
 
 data class ImageEntry(val id: String, val image: String)
+
+data class ImageEntryBasic(val id: String)
 
 data class Grid(
     val id: String,
