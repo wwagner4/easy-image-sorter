@@ -35,9 +35,12 @@ class EasySorterResource {
     fun sort(@RequestBody sorted: Sort) {
         println("-- sort --")
         println(sorted)
-
+        val original = ImageSorter.originalOrder(sorted.id)
+        val renames = ImageSorter.renamings(original, sorted.images)
+        renames.forEach { println(it) }
+        ImageSorter.rename(Path.of(sorted.id), renames)
+        println( "Renamed ${sorted.id}")
     }
-
 }
 
 data class ImageEntry(val id: String, val image: String)

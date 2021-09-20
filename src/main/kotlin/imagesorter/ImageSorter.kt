@@ -23,6 +23,11 @@ object ImageSorter {
         return originalOrder.zip(newOrderRenamed).map { (a, b) -> Rename(a, b) }
     }
 
+    fun originalOrder(id: String): List<String> {
+        val dir = Path.of(id)
+        return Files.list(dir).map { it.fileName.toString() }.filter{ImageHandler.isImageFile(it)}.toList().sorted()
+    }
+
     fun newNames(imagePattern: ImagePattern.Full, prefixes: List<String>): List<String> {
         val fmtStr = "%0${imagePattern.numberLen}d"
         return prefixes.withIndex().map {

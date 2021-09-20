@@ -145,7 +145,19 @@
                     };
                     axios
                         .post('/sort', json, params)
-                        .then(response => console.log(response));
+                        .then(response => {
+                            console.log(response)
+                            let rs = '/grid/' + btoa(this.directoryId)
+                            axios
+                                .get(rs)
+                                .then(response => {
+                                    this.directoryId = response.data.id
+                                    this.directoryList = response.data.entries
+                                    this.page = 'r'
+                                    console.log("reloaded")
+                                })
+
+                        });
                 },
                 saveAndBack: function () {
                     console.log("-- save and back -- ")
