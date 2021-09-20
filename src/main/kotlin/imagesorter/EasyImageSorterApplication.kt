@@ -16,7 +16,7 @@ fun main(args: Array<String>) {
 }
 
 @RestController
-class DirectoryEntriesResource {
+class EasySorterResource {
 
     @GetMapping("/list")
     fun directoryEntries(): Iterable<DirectoryEntry> {
@@ -25,11 +25,6 @@ class DirectoryEntriesResource {
         val baseDir = homeDir.resolve(Path.of("work", "easysort", testDir))
         return ImageHandler.imagDirectoryEntries(baseDir, 100)
     }
-
-}
-
-@RestController
-class GridResource {
 
     @GetMapping("/grid/{idBase64}")
     fun raster(@PathVariable idBase64: String): Grid {
