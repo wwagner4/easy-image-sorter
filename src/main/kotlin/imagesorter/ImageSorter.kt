@@ -10,22 +10,11 @@ data class Rename(
 
 object ImageSorter {
 
-    fun renamings(originalOrder: List<String>, newOrder: List<String>): List<Rename> {
+    fun renamings(newOrder: List<String>): List<Rename> {
         val commonImagePattern = commonImagePattern(newOrder)
-
-        val extensions = originalOrder.map { ImageHandler.toFileDetails(it).extension }
-        val newFileNames: List<String> = newNames(commonImagePattern, extensions)
-        val originalNameMap: Map<String, String> = originalOrder.zip(newFileNames).toMap()
-
-        val newOrderRenamed = newOrder.map {
-            originalNameMap.getValue(it)
-        }
-        return originalOrder.zip(newOrderRenamed).map { (a, b) -> Rename(a, b) }
-    }
-
-    fun originalOrder(id: String): List<String> {
-        val dir = Path.of(id)
-        return Files.list(dir).map { it.fileName.toString() }.filter{ImageHandler.isImageFile(it)}.toList().sorted()
+        val newOrderExtensions = newOrder.map { ImageHandler.toFileDetails(it).extension }
+        val newFileNames: List<String> = newNames(commonImagePattern, newOrderExtensions)
+        return newOrder.zip(newFileNames).map { (a, b) -> Rename(a, b) }
     }
 
     fun newNames(imagePattern: ImagePattern.Full, prefixes: List<String>): List<String> {

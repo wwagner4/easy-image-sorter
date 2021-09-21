@@ -9,10 +9,6 @@ class ImageSorterTest {
 
     @Test
     fun `rename - two files no exchanged`() {
-        val ol = listOf(
-            "a001.png",
-            "a002.png",
-        )
         val nl = listOf(
             "a001.png",
             "a002.png",
@@ -21,17 +17,13 @@ class ImageSorterTest {
             Rename("a001.png", "a001.png"),
             Rename("a002.png", "a002.png"),
         )
-        val result = ImageSorter.renamings(ol, nl)
+        val result = ImageSorter.renamings(nl)
 
         assignResults(expected, result)
     }
 
     @Test
     fun `rename - two files exchanged`() {
-        val ol = listOf(
-            "a001.png",
-            "a002.png",
-        )
         val nl = listOf(
             "a002.png",
             "a001.png",
@@ -40,18 +32,13 @@ class ImageSorterTest {
             Rename("a001.png", "a002.png"),
             Rename("a002.png", "a001.png"),
         )
-        val result = ImageSorter.renamings(ol, nl)
+        val result = ImageSorter.renamings(nl)
 
         assignResults(expected, result)
     }
 
     @Test
     fun `rename - three files first two exchanged`() {
-        val ol = listOf(
-            "a001.png",
-            "a002.png",
-            "a003.png",
-        )
         val nl = listOf(
             "a002.png",
             "a001.png",
@@ -62,18 +49,13 @@ class ImageSorterTest {
             Rename("a002.png", "a001.png"),
             Rename("a003.png", "a003.png"),
         ).shuffled()
-        val result = ImageSorter.renamings(ol, nl)
+        val result = ImageSorter.renamings(nl)
 
         assignResults(expected, result)
     }
 
     @Test
     fun `rename - three files last two exchanged`() {
-        val ol = listOf(
-            "a001.png",
-            "a002.png",
-            "a003.png",
-        )
         val nl = listOf(
             "a001.png",
             "a003.png",
@@ -84,40 +66,30 @@ class ImageSorterTest {
             Rename("a002.png", "a003.png"),
             Rename("a003.png", "a002.png"),
         ).shuffled()
-        val result = ImageSorter.renamings(ol, nl)
+        val result = ImageSorter.renamings(nl)
 
         assignResults(expected, result)
     }
 
     @Test
     fun `rename - three files rotated`() {
-        val ol = listOf(
-            "a001.png",
-            "a002.png",
-            "a003.png",
-        )
         val nl = listOf(
             "a003.png",
             "a001.png",
             "a002.png",
         )
         val expected = listOf(
-            Rename("a001.png", "a003.png"),
-            Rename("a002.png", "a001.png"),
-            Rename("a003.png", "a002.png"),
+            Rename("a001.png", "a002.png"),
+            Rename("a002.png", "a003.png"),
+            Rename("a003.png", "a001.png"),
         ).shuffled()
-        val result = ImageSorter.renamings(ol, nl)
+        val result = ImageSorter.renamings(nl)
 
         assignResults(expected, result)
     }
 
     @Test
     fun `rename - three files first and last exchanged`() {
-        val ol = listOf(
-            "a001.png",
-            "a002.png",
-            "a003.png",
-        )
         val nl = listOf(
             "a003.png",
             "a002.png",
@@ -128,18 +100,30 @@ class ImageSorterTest {
             Rename("a002.png", "a002.png"),
             Rename("a003.png", "a001.png"),
         )
-        val result = ImageSorter.renamings(ol, nl)
+        val result = ImageSorter.renamings(nl)
+
+        assignResults(expected, result)
+    }
+
+    @Test
+    fun `rename - last moved to first`() {
+        val nl = listOf(
+            "a003.png",
+            "a001.png",
+            "a002.png",
+        )
+        val expected = listOf(
+            Rename("a001.png", "a002.png"),
+            Rename("a002.png", "a003.png"),
+            Rename("a003.png", "a001.png"),
+        )
+        val result = ImageSorter.renamings(nl)
 
         assignResults(expected, result)
     }
 
     @Test
     fun `rename - one file no extension and different place`() {
-        val ol = listOf(
-            "a001.png",
-            "a002.png",
-            "x.png",
-        )
         val nl = listOf(
             "a001.png",
             "x.png",
@@ -150,7 +134,7 @@ class ImageSorterTest {
             Rename("x.png", "a002.png"),
             Rename("a002.png", "a003.png"),
         )
-        val result = ImageSorter.renamings(ol, nl)
+        val result = ImageSorter.renamings(nl)
 
         assignResults(expected, result)
     }
