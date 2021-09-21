@@ -81,7 +81,7 @@
         <div>
             <h3>{{ directoryId }}</h3>
             <p><a href="#" v-on:click="save">save</a> | <a href="#" v-on:click="saveAndBack">save and back</a> | <a
-                    href="#" v-on:click="backNoSave">back without save</a> | <a href="#" v-on:click="reset">reset</a>
+                    href="#" v-on:click="backNoSave">back without save</a>
             </p>
             <draggable
                     :list="directoryList"
@@ -161,6 +161,22 @@
                 },
                 saveAndBack: function () {
                     console.log("-- save and back -- ")
+                    let sorted = this.directoryList.flatMap(x => [x.id]);
+                    let sort = {id: this.directoryId, images: sorted}
+                    //console.log(sorted);
+                    let json = JSON.stringify(sort);
+                    //console.log(json);
+                    let params = {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    };
+                    axios
+                        .post('/sort', json, params)
+                        .then(response => {
+                            console.log(response)
+                            this.page = 'i'
+                        });
                 }
                 ,
                 backNoSave: function () {
@@ -168,9 +184,6 @@
                     this.page = 'i'
                 }
                 ,
-                reset: function () {
-                    console.log("-- reset -- ")
-                }
             },
             mounted() {
                 console.log("--- mounted ---")
