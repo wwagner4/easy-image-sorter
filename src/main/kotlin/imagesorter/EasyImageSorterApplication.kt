@@ -18,11 +18,11 @@ fun main(args: Array<String>) {
 @RestController
 class EasySorterResource {
 
-    @GetMapping("/list")
-    fun directoryEntries(): Iterable<ImageEntry> {
-        val testDir = "t1"
-        val homeDir = Path.of(System.getProperty("user.home"))
-        val baseDir = homeDir.resolve(Path.of("work", "easysort", testDir))
+    @GetMapping("/list/{idBase64}")
+    fun directoryEntries(@PathVariable idBase64: String): Iterable<ImageEntry> {
+        val id = String(Base64.decodeBase64URLSafe(idBase64), Charsets.ISO_8859_1)
+        println("-- list $id --")
+        val baseDir = Path.of(id)
         return ImageHandler.imagDirectoryEntries(baseDir, 100)
     }
 

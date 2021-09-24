@@ -143,7 +143,18 @@
                             this.directoryList = response.data.entries
                             this.page = 'r'
                         })
-                },
+                }
+                ,
+                reload: function () {
+                    console.log("-- reload -- ", this.basedir)
+                    let rs = '/list/' + btoa(this.basedir)
+                    axios
+                        .get(rs)
+                        .then(response => {
+                            this.rows = response.data
+                        })
+                }
+                ,
                 save: function () {
                     console.log("-- save -- ")
                     let sorted = this.directoryList.flatMap(x => [x.id]);
@@ -197,16 +208,9 @@
                     this.page = 'i'
                 }
                 ,
-                reload: function () {
-                    console.log("-- reload -- ", this.basedir)
-                }
-                ,
             },
             mounted() {
                 console.log("--- mounted ---")
-                axios
-                    .get('/list')
-                    .then(response => this.rows = response.data)
             }
             ,
         }
