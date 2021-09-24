@@ -21,6 +21,7 @@ class EasySorterResource {
 
     @GetMapping("/list/{idBase64}")
     fun directoryEntries(@PathVariable idBase64: String): ImagesList {
+        val start = System.currentTimeMillis()
         val idBase641 = idBase64
             .replace('.', '/')
         val id = String(Base64.decodeBase64(idBase641), Charsets.ISO_8859_1)
@@ -28,24 +29,37 @@ class EasySorterResource {
         val baseDir = Path.of(id)
         if (Files.notExists(baseDir)) return ImagesList("Base directory $id does not exist", listOf())
         if (!Files.isDirectory(baseDir)) return ImagesList("Base directory $id does is not a directory", listOf())
-        return try {
+        val re =  try {
             val entries = ImageHandler.imagDirectoryEntries(baseDir, 100)
             ImagesList(null, entries)
         } catch (e: Exception) {
             e.printStackTrace()
             ImagesList("A system error occurred when loading $id", listOf())
         }
+
+        val stop = System.currentTimeMillis()
+        val n1 = (stop.toDouble() - start) / 1000
+        val n = "%.2f".format(n1)
+        println("getting the images took $n seconds")
+        return re
     }
 
     @GetMapping("/grid/{idBase64}")
     fun raster(@PathVariable idBase64: String): Grid {
+        val start = System.currentTimeMillis()
         val idBase641 = idBase64
             .replace('.', '/')
         println("-- idbase64 $idBase64")
         println("-- idbase641 $idBase641")
         val id = String(Base64.decodeBase64(idBase641), Charsets.ISO_8859_1)
         println("-- grid $id --")
-        return ImageHandler.grid(id, 100)
+        val grid = ImageHandler.grid(id, 100)
+
+        val stop = System.currentTimeMillis()
+        val n1 = (stop.toDouble() - start) / 1000
+        val n = "%.2f".format(n1)
+        println("getting the images took $n seconds")
+        return grid
     }
 
     @PostMapping("/sort")
