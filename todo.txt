@@ -1,0 +1,3 @@
+- lock screen while saving
+- enter base url via gui
+- Bake a jar build on commandline
