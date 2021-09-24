@@ -54,14 +54,14 @@ object ImageHandler {
             val zoom = thumbnailSize.toDouble() / image.width
             val w1 = ceil(zoom * image.width).toInt()
             val h1 = ceil(zoom * image.height).toInt()
-            val resized = Scalr.resize(image, Scalr.Method.SPEED, Scalr.Mode.AUTOMATIC, w1, h1)
+            val resized = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC, w1, h1)
             val offset = floor((h1 - w1) / 2.0).toInt()
             Scalr.crop(resized, 0, offset, thumbnailSize, thumbnailSize)
         } else {
             val zoom = thumbnailSize.toDouble() / image.height
             val w1 = ceil(zoom * image.width).toInt()
             val h1 = ceil(zoom * image.height).toInt()
-            val resized = Scalr.resize(image, Scalr.Method.SPEED, Scalr.Mode.AUTOMATIC, w1, h1)
+            val resized = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC, w1, h1)
             val offset = floor((w1 - h1) / 2.0).toInt()
             Scalr.crop(resized, offset, 0, thumbnailSize, thumbnailSize)
         }
