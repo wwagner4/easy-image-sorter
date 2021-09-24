@@ -62,6 +62,7 @@
                      :columns="columns"
                      hide-header
                      hide-bottom
+                     :pagination.sync="pagination"
                      row-key="id">
                 <template v-slot:body="props">
                     <q-tr :id="props.row.id" :props="props" @click="onRowClick(props.row.id)">
@@ -102,6 +103,13 @@
             el: '#q-app',
             data() {
                 return {
+                    pagination: {
+                        sortBy: 'id',
+                        descending: false,
+                        page: 0,
+                        rowsPerPage: 0,
+                        rowsNumber: 0
+                    },
                     page: 'i',
                     columns: [
                         {

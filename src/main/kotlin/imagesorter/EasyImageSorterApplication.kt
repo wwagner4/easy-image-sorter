@@ -4,6 +4,8 @@ import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.web.bind.annotation.*
+import java.io.InputStreamReader
+import java.io.StringReader
 import java.nio.file.Path
 
 @SpringBootApplication
@@ -26,7 +28,7 @@ class EasySorterResource {
 
     @GetMapping("/grid/{idBase64}")
     fun raster(@PathVariable idBase64: String): Grid {
-        val id = String(Base64.decodeBase64URLSafe(idBase64))
+        val id = String(Base64.decodeBase64URLSafe(idBase64), Charsets.ISO_8859_1)
         println("-- grid $id --")
         return ImageHandler.grid(id, 100)
     }
