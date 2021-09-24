@@ -57,6 +57,9 @@
 <div id="q-app">
     <div class="content" v-if="this.page === 'i'">
         <h1 style="text-align: left; margin-left: 0">easy image sorter</h1>
+        <p>
+            <input type="text" v-model="basedir">&nbsp;&nbsp;<a href="#" v-on:click="reload">reload</a>
+        </p>
         <div class="q-pa-md">
             <q-table :data="rows"
                      :columns="columns"
@@ -110,6 +113,7 @@
                         rowsPerPage: 0,
                         rowsNumber: 0
                     },
+                    basedir: null,
                     page: 'i',
                     columns: [
                         {
@@ -191,6 +195,10 @@
                 backNoSave: function () {
                     console.log("-- back no save -- ")
                     this.page = 'i'
+                }
+                ,
+                reload: function () {
+                    console.log("-- reload -- ", this.basedir)
                 }
                 ,
             },
