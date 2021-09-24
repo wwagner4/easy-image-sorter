@@ -10,6 +10,7 @@
     <script src="js/vue.min.js"></script>
     <script src="js/Sortable.js"></script>
     <script src="js/vuedraggable.umd.js"></script>
+    <script src="js/cookies.js"></script>
     <style>
         @font-face {
             font-family: 'es';
@@ -102,7 +103,6 @@
 </div>
 </body>
 <script>
-
     new Vue({
             el: '#q-app',
             data() {
@@ -153,6 +153,7 @@
                 reload: function () {
                     console.log("-- reload -- ", this.basedir)
                     let b64 = btoa(this.basedir)
+                    docCookies.setItem("basedir", this.basedir, 300)
                     let rs = '/list/' + b64.replaceAll("/", ".")
                     axios
                         .get(rs)
@@ -226,6 +227,9 @@
             },
             mounted() {
                 console.log("--- mounted ---")
+                let bd = docCookies.getItem("basedir")
+                console.log("-- cookie", bd)
+                this.basedir = bd
             }
             ,
         }
