@@ -59,7 +59,7 @@
     <div class="content" v-if="this.page === 'i'">
         <h1 style="text-align: left; margin-left: 0">easy image sorter</h1>
         <p>
-            <input type="text" v-model="basedir">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" v-on:click="reload">reload</a>&nbsp;&nbsp;&nbsp;&nbsp;  <span>{{ message }}</span>
+            <input type="text" v-model="basedir" v-on:keyup="keyup">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" v-on:click="reload">reload</a>&nbsp;&nbsp;&nbsp;&nbsp;  <span>{{ message }}</span>
         </p>
         <div class="q-pa-md">
             <q-table :data="rows"
@@ -137,7 +137,10 @@
             methods: {
                 onRowClick(row) {
                     console.log('--- clicked on', row, "---")
-                    let rs = '/grid/' + btoa(row)
+                    let b64 = btoa(row)
+                    console.log("--- b64", b64)
+                    let rs = '/grid/' + b64.replaceAll("/", ".")
+                    console.log("--- request", rs)
                     axios
                         .get(rs)
                         .then(response => {
@@ -149,7 +152,8 @@
                 ,
                 reload: function () {
                     console.log("-- reload -- ", this.basedir)
-                    let rs = '/list/' + btoa(this.basedir)
+                    let b64 = btoa(this.basedir)
+                    let rs = '/list/' + b64.replaceAll("/", ".")
                     axios
                         .get(rs)
                         .then(response => {
@@ -157,6 +161,13 @@
                             this.message = response.data.message
                             this.rows = response.data.entries
                         })
+                }
+                ,
+                keyup: function (event) {
+                    console.log("-- keyup ", event)
+                    if (event.keyCode === 13) {
+                        this.reload()
+                    }
                 }
                 ,
                 save: function () {

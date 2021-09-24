@@ -21,7 +21,9 @@ class EasySorterResource {
 
     @GetMapping("/list/{idBase64}")
     fun directoryEntries(@PathVariable idBase64: String): ImagesList {
-        val id = String(Base64.decodeBase64URLSafe(idBase64), Charsets.ISO_8859_1)
+        val idBase641 = idBase64
+            .replace('.', '/')
+        val id = String(Base64.decodeBase64(idBase641), Charsets.ISO_8859_1)
         println("-- list $id --")
         val baseDir = Path.of(id)
         if (Files.notExists(baseDir)) return ImagesList("Base directory $id does not exist", listOf())
@@ -37,7 +39,11 @@ class EasySorterResource {
 
     @GetMapping("/grid/{idBase64}")
     fun raster(@PathVariable idBase64: String): Grid {
-        val id = String(Base64.decodeBase64URLSafe(idBase64), Charsets.ISO_8859_1)
+        val idBase641 = idBase64
+            .replace('.', '/')
+        println("-- idbase64 $idBase64")
+        println("-- idbase641 $idBase641")
+        val id = String(Base64.decodeBase64(idBase641), Charsets.ISO_8859_1)
         println("-- grid $id --")
         return ImageHandler.grid(id, 100)
     }

@@ -1,2 +1,4 @@
 - lock screen while saving
 - Build a jar build on commandline
+- save the latest base dir in cookie
+- cleanup println and console log
