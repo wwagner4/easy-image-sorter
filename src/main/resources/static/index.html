@@ -19,7 +19,8 @@
             font-family: 'es', cursive;
             font-size: larger;
             padding: 0 10px 0 10px;
-            background-image: url("bg3.jpg");
+            background-color: #fff1d7;
+            /* background-image: url("bg3.jpg"); */
         }
 
         .content {
@@ -58,7 +59,7 @@
     <div class="content" v-if="this.page === 'i'">
         <h1 style="text-align: left; margin-left: 0">easy image sorter</h1>
         <p>
-            <input type="text" v-model="basedir">&nbsp;&nbsp;<a href="#" v-on:click="reload">reload</a>
+            <input type="text" v-model="basedir">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" v-on:click="reload">reload</a>&nbsp;&nbsp;&nbsp;&nbsp;  <span>{{ message }}</span>
         </p>
         <div class="q-pa-md">
             <q-table :data="rows"
@@ -114,6 +115,7 @@
                         rowsNumber: 0
                     },
                     basedir: null,
+                    message: null,
                     page: 'i',
                     columns: [
                         {
@@ -151,7 +153,9 @@
                     axios
                         .get(rs)
                         .then(response => {
-                            this.rows = response.data
+                            console.log(response.data.message)
+                            this.message = response.data.message
+                            this.rows = response.data.entries
                         })
                 }
                 ,

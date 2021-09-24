@@ -73,7 +73,6 @@ object ImageSorter {
             val srcPath = dir.resolve(rename.srcName)
             val destPath = dir.resolve(rename.destName)
             Files.move(srcPath, destPath)
-            println("moved $srcPath to $destPath")
         }
 
         fun isRenaming(rename: Rename): Boolean {

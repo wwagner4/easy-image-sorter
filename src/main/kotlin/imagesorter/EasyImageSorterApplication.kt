@@ -6,6 +6,7 @@ import org.springframework.boot.runApplication
 import org.springframework.web.bind.annotation.*
 import java.io.InputStreamReader
 import java.io.StringReader
+import java.nio.file.Files
 import java.nio.file.Path
 
 @SpringBootApplication
@@ -19,11 +20,19 @@ fun main(args: Array<String>) {
 class EasySorterResource {
 
     @GetMapping("/list/{idBase64}")
-    fun directoryEntries(@PathVariable idBase64: String): Iterable<ImageEntry> {
+    fun directoryEntries(@PathVariable idBase64: String): ImagesList {
         val id = String(Base64.decodeBase64URLSafe(idBase64), Charsets.ISO_8859_1)
         println("-- list $id --")
         val baseDir = Path.of(id)
-        return ImageHandler.imagDirectoryEntries(baseDir, 100)
+        if (Files.notExists(baseDir)) return ImagesList("Base directory $id does not exist", listOf())
+        if (!Files.isDirectory(baseDir)) return ImagesList("Base directory $id does is not a directory", listOf())
+        return try {
+            val entries = ImageHandler.imagDirectoryEntries(baseDir, 100)
+            ImagesList(null, entries)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ImagesList("A system error occurred when loading $id", listOf())
+        }
     }
 
     @GetMapping("/grid/{idBase64}")
@@ -40,13 +49,19 @@ class EasySorterResource {
         val renames = ImageSorter.renamings(sorted.images)
         renames.forEach { println(it) }
         ImageSorter.rename(Path.of(sorted.id), renames)
-        println( "Renamed ${sorted.id}")
+        println("Renamed ${sorted.id}")
     }
 }
 
 data class ImageEntry(val id: String, val image: String)
 
 data class Sort(val id: String, val images: List<String>)
+
+data class ImagesList(
+    val message: String?,
+    val entries: Iterable<ImageEntry>
+)
+
 
 data class Grid(
     val id: String,
@@ -61,6 +76,7 @@ data class FileDetails(
     val imagePattern: ImagePattern
 )
 
+// TODO Replace ImagePattern by ImagePatternFull and null
 sealed interface ImagePattern {
 
     data class Full(

@@ -2,6 +2,7 @@ package imagesorter
 
 import org.imgscalr.Scalr
 import java.io.ByteArrayOutputStream
+import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
@@ -48,6 +49,7 @@ object ImageHandler {
         val fileDetails = toFileDetails(imageFile.fileName.toString())
 
         val image = ImageIO.read(imageFile.toFile())
+            ?: throw RuntimeException("$imageFile is supposed to be an image but cannot be loaded by ImageIO")
         val thumb = if (image.width < image.height) {
             val zoom = thumbnailSize.toDouble() / image.width
             val w1 = ceil(zoom * image.width).toInt()
@@ -112,6 +114,7 @@ object ImageHandler {
             val base64HtmlString = "data:image/${base64Data.format};base64, ${base64Data.value}"
             return ImageEntry(id, base64HtmlString)
         }
+
         val entries = Files.list(imagesDir).parallel().map { directoryEntry(it) }
         return entries.toList().filterNotNull().sortedBy { it.id }
     }
