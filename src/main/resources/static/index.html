@@ -1,43 +1,93 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+<!--suppress ALL -->
+<html lang="en" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>easy image sorter</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script src="js/axios.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="js/Sortable.js"></script>
+    <script src="js/vuedraggable.umd.js"></script>
+    <script src="js/cookies.js"></script>
     <style>
+        @font-face {
+            font-family: 'es';
+            src: url('Inter-Light.ttf')  format('truetype');
+        }
         body {
-            font-family: 'Special Elite', cursive;
+            font-family: 'es', cursive;
             font-size: larger;
             padding: 0 10px 0 10px;
-            background-image: url("bg2.jpg");
+            background-color: #fff1d7;
+            /* background-image: url("bg3.jpg"); */
         }
 
         .content {
-            max-width: 40em;
+            max-width: 80em;
             margin: 2em auto 0 auto;
+        }
+
+        .col {
+            padding-right: 0;
+            margin-right: 15px;
+        }
+
+        .grid-square {
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            background-color: transparent;
+            border: solid 0 black;
+            padding: 0;
+            margin: 0 4px 4px 0;
+        }
+
+        .ghost {
+            opacity: 0.5;
+            background: white;
         }
 
         .q-td {
             cursor: pointer;
         }
+        .spinner {
+            z-index: 10;
+            display: block;
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(213, 255, 138, 0.40);
+        }
+        .centered {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/quasar@1.14.6/dist/quasar.umd.min.js"></script>
-
-<div class="content">
-    <h1>easy image sorter</h1>
-    <div id="q-app">
+<div id="q-app">
+    <q-inner-loading :showing="spinnerVisible" class="spinner">
+        <q-spinner-clock size="150px" color="primary" class="centered"/>
+    </q-inner-loading>
+    <div class="content" v-if="this.page === 'i'">
+        <h1 style="text-align: left; margin-left: 0">easy image sorter</h1>
+        <p>
+            <input type="text" v-model="basedir" v-on:keyup="keyup">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" v-on:click="reload">reload</a>&nbsp;&nbsp;&nbsp;&nbsp;  <span>{{ message }}</span>
+        </p>
         <div class="q-pa-md">
             <q-table :data="rows"
                      :columns="columns"
                      hide-header
                      hide-bottom
+                     :pagination.sync="pagination"
                      row-key="id">
                 <template v-slot:body="props">
                     <q-tr :id="props.row.id" :props="props" @click="onRowClick(props.row.id)">
@@ -54,15 +104,40 @@
             </q-table>
         </div>
     </div>
+    <div class="content" v-if="this.page === 'r'">
+        <div>
+            <h3>{{ directoryId }}</h3>
+            <p><a href="#" v-on:click="save">save</a> | <a href="#" v-on:click="saveAndBack">save and back</a> | <a
+                    href="#" v-on:click="backNoSave">back without save</a>
+            </p>
+            <draggable
+                    :list="directoryList"
+                    ghost-class="ghost"
+                    class="col">
+                <div class="grid-square" v-for="element in directoryList" :key="element.id">
+                    <img :src="element.image" :alt="element.id">
+                </div>
+            </draggable>
+        </div>
+    </div>
 </div>
-
 </body>
 <script>
-
     new Vue({
             el: '#q-app',
             data() {
                 return {
+                    pagination: {
+                        sortBy: 'id',
+                        descending: false,
+                        page: 0,
+                        rowsPerPage: 0,
+                        rowsNumber: 0
+                    },
+                    spinnerVisible: false,
+                    basedir: null,
+                    message: null,
+                    page: 'i',
                     columns: [
                         {
                             name: 'image',
@@ -75,20 +150,117 @@
                             style: 'padding-left: 20px; vertical-align: bottom;',
                         },
                     ],
-                    rows: []
+                    rows: [],
+                    directoryId: "",
+                    directoryList: []
                 }
             },
             methods: {
                 onRowClick(row) {
-                    console.log('clicked on', row)
+                    console.log('--- clicked on', row, "---")
+                    let b64 = btoa(row)
+                    console.log("--- b64", b64)
+                    let rs = '/grid/' + b64.replaceAll("/", ".")
+                    console.log("--- request", rs)
+                    this.spinnerVisible=true
+                    axios
+                        .get(rs)
+                        .then(response => {
+                            this.directoryId = response.data.id
+                            this.directoryList = response.data.entries
+                            this.spinnerVisible=false
+                            this.page = 'r'
+                        })
                 }
+                ,
+                reload: function () {
+                    console.log("-- reload -- ", this.basedir)
+                    let b64 = btoa(this.basedir)
+                    docCookies.setItem("basedir", this.basedir, 300)
+                    let rs = '/list/' + b64.replaceAll("/", ".")
+                    this.spinnerVisible=true
+                    axios
+                        .get(rs)
+                        .then(response => {
+                            console.log(response.data.message)
+                            this.message = response.data.message
+                            this.rows = response.data.entries
+                            this.spinnerVisible=false
+                        })
+                }
+                ,
+                keyup: function (event) {
+                    console.log("-- keyup ", event)
+                    if (event.keyCode === 13) {
+                        this.reload()
+                    }
+                }
+                ,
+                save: function () {
+                    console.log("-- save -- ")
+                    let sorted = this.directoryList.flatMap(x => [x.id]);
+                    let sort = {id: this.directoryId, images: sorted}
+                    //console.log(sorted);
+                    let json = JSON.stringify(sort);
+                    //console.log(json);
+                    let params = {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    };
+                    this.spinnerVisible=true
+                    axios
+                        .post('/sort', json, params)
+                        .then(response => {
+                            console.log(response)
+                            let rs = '/grid/' + btoa(this.directoryId)
+                            axios
+                                .get(rs)
+                                .then(response => {
+                                    this.directoryId = response.data.id
+                                    this.directoryList = response.data.entries
+                                    this.page = 'r'
+                                    console.log("reloaded")
+                                    this.spinnerVisible=false
+                                })
+
+                        });
+                },
+                saveAndBack: function () {
+                    console.log("-- save and back -- ")
+                    let sorted = this.directoryList.flatMap(x => [x.id]);
+                    let sort = {id: this.directoryId, images: sorted}
+                    //console.log(sorted);
+                    let json = JSON.stringify(sort);
+                    //console.log(json);
+                    let params = {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    };
+                    this.spinnerVisible=true
+                    axios
+                        .post('/sort', json, params)
+                        .then(response => {
+                            console.log(response)
+                            this.spinnerVisible=false
+                            this.page = 'i'
+                        });
+                }
+                ,
+                backNoSave: function () {
+                    console.log("-- back no save -- ")
+                    this.page = 'i'
+                }
+                ,
             },
             mounted() {
                 console.log("--- mounted ---")
-                axios
-                    .get('/list')
-                    .then(response => this.rows = response.data)
-            },
+                let bd = docCookies.getItem("basedir")
+                console.log("-- cookie", bd)
+                this.basedir = bd
+            }
+            ,
         }
     )
 </script>

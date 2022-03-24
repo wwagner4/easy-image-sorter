@@ -2,6 +2,7 @@ package imagesorter
 
 import org.imgscalr.Scalr
 import java.io.ByteArrayOutputStream
+import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
@@ -48,18 +49,19 @@ object ImageHandler {
         val fileDetails = toFileDetails(imageFile.fileName.toString())
 
         val image = ImageIO.read(imageFile.toFile())
+            ?: throw RuntimeException("$imageFile is supposed to be an image but cannot be loaded by ImageIO")
         val thumb = if (image.width < image.height) {
             val zoom = thumbnailSize.toDouble() / image.width
             val w1 = ceil(zoom * image.width).toInt()
             val h1 = ceil(zoom * image.height).toInt()
-            val resized = Scalr.resize(image, Scalr.Method.SPEED, Scalr.Mode.AUTOMATIC, w1, h1)
+            val resized = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC, w1, h1)
             val offset = floor((h1 - w1) / 2.0).toInt()
             Scalr.crop(resized, 0, offset, thumbnailSize, thumbnailSize)
         } else {
             val zoom = thumbnailSize.toDouble() / image.height
             val w1 = ceil(zoom * image.width).toInt()
             val h1 = ceil(zoom * image.height).toInt()
-            val resized = Scalr.resize(image, Scalr.Method.SPEED, Scalr.Mode.AUTOMATIC, w1, h1)
+            val resized = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC, w1, h1)
             val offset = floor((w1 - h1) / 2.0).toInt()
             Scalr.crop(resized, offset, 0, thumbnailSize, thumbnailSize)
         }
@@ -74,21 +76,21 @@ object ImageHandler {
     }
 
 
-    fun imagDirectoryEntries(baseDir: Path): Iterable<DirectoryEntry> {
+    fun imagDirectoryEntries(baseDir: Path, thumbnailSize: Int): Iterable<ImageEntry> {
 
-        fun toImageDirectoryEntry(path: Path): DirectoryEntry? {
+        fun toImageDirectoryEntry(path: Path): ImageEntry? {
 
-            fun directoryEntry(firstImage: Path): DirectoryEntry {
+            fun directoryEntry(firstImage: Path): ImageEntry {
                 val id = path.toAbsolutePath().toString()
-                val base64Data = base64Thumbnail(firstImage, 100)
+                val base64Data = base64Thumbnail(firstImage, thumbnailSize)
                 val base64HtmlString = "data:image/${base64Data.format};base64, ${base64Data.value}"
-                return DirectoryEntry(id, base64HtmlString)
+                return ImageEntry(id, base64HtmlString)
             }
 
-            fun toDirectoryEntry(): DirectoryEntry? {
-                fun anyImageFile(files: List<Path>): DirectoryEntry? {
+            fun toDirectoryEntry(): ImageEntry? {
+                fun anyImageFile(files: List<Path>): ImageEntry? {
                     if (files.isEmpty()) return null
-                    val head = files[0]
+                    val head = files.sortedBy { it.fileName.toString() }[0]
                     if (isImageFile(head)) return directoryEntry(head)
                     return anyImageFile(files.drop(1))
                 }
@@ -101,6 +103,26 @@ object ImageHandler {
         return Files.walk(baseDir)
             .toList()
             .mapNotNull { toImageDirectoryEntry(it) }
+    }
+
+    private fun imageEntries(imagesDir: Path, thumbnailSize: Int): Iterable<ImageEntry> {
+
+        fun directoryEntry(file: Path): ImageEntry? {
+            val id = file.fileName.toString()
+            if (!isImageFile(file)) return null
+            val base64Data = base64Thumbnail(file, thumbnailSize)
+            val base64HtmlString = "data:image/${base64Data.format};base64, ${base64Data.value}"
+            return ImageEntry(id, base64HtmlString)
+        }
+
+        val entries = Files.list(imagesDir).parallel().map { directoryEntry(it) }
+        return entries.toList().filterNotNull().sortedBy { it.id }
+    }
+
+    fun grid(id: String, thumbnailSize: Int): Grid {
+        val tDir = Path.of(id)
+        val gridEntries: Iterable<ImageEntry> = imageEntries(tDir, thumbnailSize)
+        return Grid(id = id, gridEntries)
     }
 
 

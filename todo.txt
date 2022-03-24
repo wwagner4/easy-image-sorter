@@ -1,0 +1,3 @@
+- lock screen while saving
+- Build a jar build on commandline
+- cleanup println and console log
