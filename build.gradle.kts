@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "net.entelijan"
-version = "0.0.1-SNAPSHOT"
+version = "1.0"
 java.sourceCompatibility = JavaVersion.VERSION_14
 
 repositories {
@@ -34,3 +34,4 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
