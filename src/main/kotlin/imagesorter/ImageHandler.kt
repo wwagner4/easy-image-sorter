@@ -146,6 +146,7 @@ object ImageHandler {
                 }
                 return anyImageFile(Files.list(path).toList())
             }
+            if (Files.isDirectory(path)) println("loading ${path.fileName}")
             if (Files.isDirectory(path)) return toDirectoryEntry()
             return null
         }
@@ -158,6 +159,7 @@ object ImageHandler {
     private fun imageEntries(imagesDir: Path, thumbnailSize: Int): Iterable<ImageEntry> {
 
         fun directoryEntry(file: Path): ImageEntry? {
+            println("loading ${file.fileName}")
             val id = file.fileName.toString()
             if (!isImageFile(file)) return null
             val base64Data = base64Thumbnail(file, thumbnailSize)

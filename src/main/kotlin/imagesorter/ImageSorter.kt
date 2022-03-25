@@ -10,8 +10,8 @@ data class Rename(
 
 object ImageSorter {
 
-    fun renamings(newOrder: List<String>): List<Rename> {
-        val commonImagePattern = commonImagePattern(newOrder)
+    fun renamings(newOrder: List<String>, fixedPrefix: String?): List<Rename> {
+        val commonImagePattern = commonImagePattern(newOrder, fixedPrefix)
         val newOrderExtensions = newOrder.map { ImageHandler.toFileDetails(it).extension }
         val newFileNames: List<String> = newNames(commonImagePattern, newOrderExtensions)
         return newOrder.zip(newFileNames).map { (a, b) -> Rename(a, b) }
@@ -27,7 +27,7 @@ object ImageSorter {
         }
     }
 
-    fun commonImagePattern(fileNames: List<String>): ImagePattern.Full {
+    fun commonImagePattern(fileNames: List<String>, fixedPrefix: String?): ImagePattern.Full {
 
         val defaultNumberLen = 5
         val defaultPrefix = "image-"
@@ -55,7 +55,10 @@ object ImageSorter {
         val groups = imagePatterns.mapNotNull { full(it) }.groupBy { it.prefix }.toList()
         val prefixGroups = groups.map { prefixGroup(it) }.sortedBy { it.prefix }.sortedBy { -it.count }
 
-        return if (prefixGroups.isEmpty()) ImagePattern.Full(defaultPrefix, numberLen = defaultNumberLen, 0)
+        return if (fixedPrefix != null && fixedPrefix.trim().isNotEmpty()) {
+            val fp = if (fixedPrefix.endsWith("_") || fixedPrefix.endsWith("-")) fixedPrefix else "${fixedPrefix}_"
+            ImagePattern.Full(fp, numberLen = defaultNumberLen, 0)
+        } else if (prefixGroups.isEmpty()) ImagePattern.Full(defaultPrefix, numberLen = defaultNumberLen, 0)
         else {
             val pg = prefixGroups[0]
             ImagePattern.Full(pg.prefix, numberLen = pg.maxNumberLen, pg.minNumber)

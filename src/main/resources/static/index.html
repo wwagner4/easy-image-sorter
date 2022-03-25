@@ -80,7 +80,10 @@
     <div class="content" v-if="this.page === 'i'">
         <h1 style="text-align: left; margin-left: 0">easy image sorter</h1>
         <p>
-            <input type="text" v-model="basedir" v-on:keyup="keyup">&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" v-on:click="reload">reload</a>&nbsp;&nbsp;&nbsp;&nbsp;  <span>{{ message }}</span>
+            <input type="text" v-model="basedir" v-on:keyup="keyup">&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="text" style="width: 60px" v-model="prefix">&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="#" v-on:click="reload">reload</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span>{{ message }}</span>
         </p>
         <div class="q-pa-md">
             <q-table :data="rows"
@@ -107,7 +110,9 @@
     <div class="content" v-if="this.page === 'r'">
         <div>
             <h3>{{ directoryId }}</h3>
-            <p><a href="#" v-on:click="save">save</a> | <a href="#" v-on:click="saveAndBack">save and back</a> | <a
+            <p>
+                <input type="text"  style="width: 60px"  v-model="prefix">&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="#" v-on:click="save">save</a> | <a href="#" v-on:click="saveAndBack">save and back</a> | <a
                     href="#" v-on:click="backNoSave">back without save</a>
             </p>
             <draggable
@@ -136,6 +141,7 @@
                     },
                     spinnerVisible: false,
                     basedir: null,
+                    prefix: null,
                     message: null,
                     page: 'i',
                     columns: [
@@ -199,7 +205,7 @@
                 save: function () {
                     console.log("-- save -- ")
                     let sorted = this.directoryList.flatMap(x => [x.id]);
-                    let sort = {id: this.directoryId, images: sorted}
+                    let sort = {id: this.directoryId, images: sorted, fixedPrefix: this.prefix}
                     //console.log(sorted);
                     let json = JSON.stringify(sort);
                     //console.log(json);
@@ -229,7 +235,7 @@
                 saveAndBack: function () {
                     console.log("-- save and back -- ")
                     let sorted = this.directoryList.flatMap(x => [x.id]);
-                    let sort = {id: this.directoryId, images: sorted}
+                    let sort = {id: this.directoryId, images: sorted, fixedPrefix: this.prefix}
                     //console.log(sorted);
                     let json = JSON.stringify(sort);
                     //console.log(json);
