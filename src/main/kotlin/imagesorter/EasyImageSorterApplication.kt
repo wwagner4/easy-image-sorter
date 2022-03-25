@@ -4,8 +4,6 @@ import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.web.bind.annotation.*
-import java.io.InputStreamReader
-import java.io.StringReader
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -40,7 +38,7 @@ class EasySorterResource {
         val stop = System.currentTimeMillis()
         val n1 = (stop.toDouble() - start) / 1000
         val n = "%.2f".format(n1)
-        println("getting the images took $n seconds")
+        println("getting directory entries took $n seconds")
         return re
     }
 
@@ -58,15 +56,15 @@ class EasySorterResource {
         val stop = System.currentTimeMillis()
         val n1 = (stop.toDouble() - start) / 1000
         val n = "%.2f".format(n1)
-        println("getting the images took $n seconds")
+        println("getting thumbnails took $n seconds")
         return grid
     }
 
     @PostMapping("/sort")
     fun sort(@RequestBody sorted: Sort) {
-        println("-- sort --")
+        println("-- sort -- $sorted")
         println(sorted)
-        val renames = ImageSorter.renamings(sorted.images)
+        val renames = ImageSorter.renamings(sorted.images, sorted.fixedPrefix)
         renames.forEach { println(it) }
         ImageSorter.rename(Path.of(sorted.id), renames)
         println("Renamed ${sorted.id}")
@@ -75,7 +73,7 @@ class EasySorterResource {
 
 data class ImageEntry(val id: String, val image: String)
 
-data class Sort(val id: String, val images: List<String>)
+data class Sort(val id: String, val images: List<String>, val fixedPrefix: String?)
 
 data class ImagesList(
     val message: String?,

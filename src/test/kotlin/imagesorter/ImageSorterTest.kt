@@ -17,7 +17,7 @@ class ImageSorterTest {
             Rename("a001.png", "a001.png"),
             Rename("a002.png", "a002.png"),
         )
-        val result = ImageSorter.renamings(nl)
+        val result = ImageSorter.renamings(nl, null)
 
         assignResults(expected, result)
     }
@@ -32,7 +32,7 @@ class ImageSorterTest {
             Rename("a001.png", "a002.png"),
             Rename("a002.png", "a001.png"),
         )
-        val result = ImageSorter.renamings(nl)
+        val result = ImageSorter.renamings(nl, null)
 
         assignResults(expected, result)
     }
@@ -49,7 +49,7 @@ class ImageSorterTest {
             Rename("a002.png", "a001.png"),
             Rename("a003.png", "a003.png"),
         ).shuffled()
-        val result = ImageSorter.renamings(nl)
+        val result = ImageSorter.renamings(nl, null)
 
         assignResults(expected, result)
     }
@@ -66,7 +66,7 @@ class ImageSorterTest {
             Rename("a002.png", "a003.png"),
             Rename("a003.png", "a002.png"),
         ).shuffled()
-        val result = ImageSorter.renamings(nl)
+        val result = ImageSorter.renamings(nl, null)
 
         assignResults(expected, result)
     }
@@ -83,7 +83,7 @@ class ImageSorterTest {
             Rename("a002.png", "a003.png"),
             Rename("a003.png", "a001.png"),
         ).shuffled()
-        val result = ImageSorter.renamings(nl)
+        val result = ImageSorter.renamings(nl, null)
 
         assignResults(expected, result)
     }
@@ -100,7 +100,7 @@ class ImageSorterTest {
             Rename("a002.png", "a002.png"),
             Rename("a003.png", "a001.png"),
         )
-        val result = ImageSorter.renamings(nl)
+        val result = ImageSorter.renamings(nl, null)
 
         assignResults(expected, result)
     }
@@ -117,7 +117,7 @@ class ImageSorterTest {
             Rename("a002.png", "a003.png"),
             Rename("a003.png", "a001.png"),
         )
-        val result = ImageSorter.renamings(nl)
+        val result = ImageSorter.renamings(nl, null)
 
         assignResults(expected, result)
     }
@@ -134,7 +134,7 @@ class ImageSorterTest {
             Rename("x.png", "a002.png"),
             Rename("a002.png", "a003.png"),
         )
-        val result = ImageSorter.renamings(nl)
+        val result = ImageSorter.renamings(nl, null)
 
         assignResults(expected, result)
     }
@@ -147,7 +147,7 @@ class ImageSorterTest {
             "a002.png",
             "a003.png",
         )
-        val ip = ImageSorter.commonImagePattern(fs)
+        val ip = ImageSorter.commonImagePattern(fs, null)
         assertEquals(ImagePattern.Full("a", 3, 0), ip)
     }
 
@@ -159,7 +159,7 @@ class ImageSorterTest {
             "a002.png",
             "a003.png",
         )
-        val ip = ImageSorter.commonImagePattern(fs)
+        val ip = ImageSorter.commonImagePattern(fs, null)
         assertEquals(ImagePattern.Full("a", 3, 1), ip)
     }
 
@@ -170,7 +170,7 @@ class ImageSorterTest {
             "a0002.png",
             "a00003.png",
         )
-        val ip = ImageSorter.commonImagePattern(fs)
+        val ip = ImageSorter.commonImagePattern(fs, null)
         assertEquals(ImagePattern.Full("a", 5, 1), ip)
     }
 
@@ -183,7 +183,7 @@ class ImageSorterTest {
             "b003.png",
             "b004.png",
         )
-        val ip = ImageSorter.commonImagePattern(fs)
+        val ip = ImageSorter.commonImagePattern(fs, null)
         assertEquals(ImagePattern.Full("b", 3, 2), ip)
     }
 
@@ -197,7 +197,7 @@ class ImageSorterTest {
             "b003.png",
             "b004.png",
         )
-        val ip = ImageSorter.commonImagePattern(fs)
+        val ip = ImageSorter.commonImagePattern(fs, null)
         assertEquals(ImagePattern.Full("a", 3, 1), ip)
     }
 
@@ -211,7 +211,7 @@ class ImageSorterTest {
             "b003.png",
             "b004.png",
         )
-        val ip = ImageSorter.commonImagePattern(fs)
+        val ip = ImageSorter.commonImagePattern(fs, null)
         assertEquals(ImagePattern.Full("b", 3, 2), ip)
     }
 
@@ -225,7 +225,7 @@ class ImageSorterTest {
             "b003.txt",
             "b004",
         )
-        val ip = ImageSorter.commonImagePattern(fs)
+        val ip = ImageSorter.commonImagePattern(fs, null)
         assertEquals(ImagePattern.Full("image-", 5, 0), ip)
     }
 
